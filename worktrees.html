@@ -2,92 +2,54 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How I Give Every AI Agent Its Own Git Worktree (So They Can't Trash Each Other's Work)</title>
-<style>
-  body{background:#fff;color:rgba(41,41,41,1);font-family:Georgia,'Times New Roman',serif;
-       max-width:680px;margin:0 auto;padding:48px 24px 80px;line-height:1.58;font-size:21px;-webkit-font-smoothing:antialiased;}
-  h1{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:40px;line-height:1.15;
-     font-weight:700;letter-spacing:-.02em;margin:0 0 12px;color:#242424;}
-  .sub{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:22px;line-height:1.3;
-       color:#6B6B6B;font-weight:400;margin:0 0 28px;}
-  h2{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:28px;line-height:1.2;
-     font-weight:700;letter-spacing:-.02em;margin:44px 0 8px;color:#242424;}
-  p{margin:0 0 28px;}
-  blockquote{border-left:3px solid #242424;margin:28px 0;padding:4px 0 4px 24px;font-style:italic;color:#242424;}
-  strong{font-weight:700;}
-  code{font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;font-size:.82em;background:#f2f2f0;padding:2px 6px;border-radius:4px;}
-  pre{background:#0d1017;color:#e6e6e6;font-family:'SFMono-Regular',Consolas,monospace;font-size:15px;
-      line-height:1.5;padding:18px 20px;border-radius:8px;overflow-x:auto;margin:28px 0;}
-  hr{border:none;text-align:center;margin:40px 0;}
-  hr:after{content:'· · ·';letter-spacing:.6em;color:#6B6B6B;font-size:22px;}
-  a{color:#242424;text-decoration:underline;}
-  .byline{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;color:#6B6B6B;
-          border-bottom:1px solid #eee;padding-bottom:24px;margin-bottom:32px;}
-  em{font-style:italic;}
-</style>
 </head>
 <body>
 
 <h1>How I Give Every AI Agent Its Own Git Worktree (So They Can't Trash Each Other's Work)</h1>
-<p class="sub">The unglamorous git trick that lets a handful of AI agents build in the same repo at the same time — without turning it into a merge horror show.</p>
+<p class="sub">Two agents, one repo, one very bad afternoon. The unglamorous git trick that fixed it for good.</p>
 <p class="byline">buckstrdr · 5 min read</p>
 
-<p>In my last piece I said each agent in my little AI team "owns its own files" so they don't overwrite each other. A reader called me on it, fairly: <em>"OK, but they're all working in the same repo — how does that not just explode?"</em></p>
+<figure><img src="https://buckstrdr.github.io/writing/img/worktrees_cover.png" alt="One repo, three agents, zero collisions"></figure>
 
-<p>Good question. And the honest answer is that "owns its own files" as a *rule* isn't enough. Rules get forgotten — especially by an eager agent that's decided the quickest way to do its job is to switch branches out from under everyone else. You don't want a polite agreement. You want a wall.</p>
+<p>I once had two agents building two different features in the same repo at the same time. Very efficient, I thought, very clever of me.</p>
 
-<p>The wall is <strong>git worktrees</strong>. It's not clever, it's not new, and hardly anyone uses it. But it's the single thing that turned "a few agents flailing in one folder" into actual parallel work.</p>
+<p>Then agent A, halfway through editing three files, decided it needed a different branch to do its job — ran a <em>git checkout</em> — and yanked the floor out from under agent B, who was mid-edit. What I got back was a single working directory containing half of each feature, mashed together, that compiled perfectly and worked not at all. It took me longer to unpick than it would've taken to just build both myself.</p>
 
-<h2>The problem: one repo, one working directory, several agents</h2>
-<p>Picture two agents in the same checkout. Agent A is halfway through editing three files. Agent B decides it needs a different branch to do its job, so it runs <code>git checkout other-branch</code> — and just like that, the floor vanishes under Agent A. Its half-done work is now sat on the wrong branch, or stashed, or gone.</p>
-
-<p>Or they both just… edit. And you come back to a working directory that's a Frankenstein of two half-finished features, which of course still compiles, so you don't notice until something's subtly broken in production. The worst kind of broken, as I keep banging on about.</p>
-
-<p>The root of it: in one directory, you can only be on <em>one branch at a time</em>. Parallel agents and a single shared checkout are fundamentally at war.</p>
+<p>That's what parallel agents in one working directory get you. And the fix isn't sterner prompts or telling them to be careful — they don't listen, same as the rest of us. The fix is giving each one its own <strong>git worktree</strong>. It's the least glamorous trick in my whole setup, and quietly the most load-bearing.</p>
 
 <h2>What a worktree actually is</h2>
-<p>A git worktree is just a second working directory hanging off the same repo. Same history, same underlying <code>.git</code> object store — but checked out to its own branch, in its own folder.</p>
+<p>A worktree is just a second working directory hanging off the same repo. Same history, same underlying <em>.git</em>, but checked out to its own branch, in its own folder. One command and you've got a complete, separate copy of the code, pinned to its own branch, sharing the repo's guts.</p>
 
-<pre>git worktree add ../work/auth -b auth-feature</pre>
+<figure><img src="https://buckstrdr.github.io/writing/img/worktrees_code.png" alt="The git worktree lifecycle"></figure>
 
-<p>Run that and you've got a complete, separate copy of the code sitting in <code>../work/auth</code>, on a branch called <code>auth-feature</code>, sharing the repo's guts. It's cheap, because it's not a re-clone — the object database is shared. You just get another window into the same project, pinned to its own branch.</p>
+<p>It's cheap, because it isn't a re-clone — the object store is shared. You just get another window into the same project that can't see the other windows. Which, after my mashed-together afternoon, was exactly what I wanted.</p>
 
 <h2>How I wire it into the team</h2>
-<p>When the orchestrator hands a job to a worker, it spins that worker up in <em>its own fresh worktree, on its own branch.</em> The agent builds in there and it physically cannot see or touch the other agents' folders. "Stay in your lane" stops being something an agent has to remember and becomes something the filesystem enforces.</p>
+<p>Now, when a worker gets a job, it gets spun up in its own fresh worktree, on its own branch. It builds in there and it physically cannot touch the other agents' folders. "Stay in your lane" stops being a polite request an agent forgets thirty seconds later, and becomes a wall the filesystem enforces whether it likes it or not.</p>
 
-<p>When the worker's done, the flow is boring and predictable:</p>
-
-<pre>git worktree add ../work/&lt;job&gt; -b &lt;job&gt;   # give the agent a sandbox
-# ...agent works, commits, opens a PR...
-git worktree remove ../work/&lt;job&gt;         # bin the sandbox when merged</pre>
-
-<p>Review the branch, merge it, remove the worktree. Three agents, three sandboxes, three clean branches — instead of one contaminated working directory you have to untangle by hand.</p>
+<p>When it's done, the flow is boring and predictable — which is the whole point. Give the agent a sandbox, let it work, review the branch, merge it, bin the sandbox. Three agents, three sealed sandboxes, three clean branches to merge — instead of one contaminated directory I have to perform surgery on.</p>
 
 <h2>Why it beats the obvious alternatives</h2>
-<p><strong>vs. everyone in one folder, switching branches:</strong> no thrashing, no stashing, nobody yanking the rug on an agent mid-edit. Each agent's branch just sits there, untouched, in its own directory.</p>
+<p>The instinct is to just let everyone work in one folder and switch branches as needed. That's exactly what bit me — one <em>git checkout</em> and someone's mid-flight work is on the wrong branch or stashed into oblivion. Worktrees mean nobody ever switches the branch out from under anyone, because each agent's branch just sits there in its own directory, untouched.</p>
 
-<p><strong>vs. cloning the repo N times:</strong> worktrees share the object store, so they're faster to make and lighter on disk, and every branch is visible from every worktree. Clones drift into separate little islands; worktrees stay one repo.</p>
-
-<p><strong>Parallel tests and builds:</strong> each worktree builds on its own. Three agents can run the full test suite at the same time without standing on each other's output.</p>
+<p>The other instinct is to clone the whole repo three times. That works, but the clones drift into separate little islands and it's heavier on disk. Worktrees share one object store, so they're lighter and every branch stays visible from every worktree. One repo, several hands, no collisions.</p>
 
 <h2>The honest gotchas — because there are a few</h2>
-<p><strong>You can't check out the same branch in two worktrees.</strong> Git flatly refuses. Sounds annoying; it's actually a gift — it means two agents can't both be editing the same branch by accident.</p>
+<p><strong>You can't check out the same branch in two worktrees.</strong> Git flatly refuses. Felt annoying the first time; it's actually a gift — it's git stopping two agents editing the same branch by accident, which is precisely the kind of thing my agents would otherwise do with great enthusiasm.</p>
 
-<p><strong>Cleanup needs discipline.</strong> Stale worktrees pile up if you're sloppy. <code>git worktree remove</code> when you're done, and <code>git worktree prune</code> to sweep up dead ones. When an agent dies messily mid-job, you'll occasionally need <code>git worktree remove --force</code> — and yes, that's exactly as fun as it sounds.</p>
+<p><strong>Cleanup needs discipline.</strong> Stale worktrees pile up if you're sloppy. And when an agent dies messily mid-job — which happens — you'll occasionally need <em>git worktree remove --force</em>, which is exactly as much fun as it sounds.</p>
 
-<p><strong>Disk and dependencies are real.</strong> Each worktree is a full checkout, and things like <code>node_modules</code> or a Python venv don't magically share — so N worktrees on a heavy repo can mean N installs. For most projects it's a non-issue. For a monster monorepo, budget for it.</p>
-
-<p><strong>Something has to manage them.</strong> Creating and destroying worktrees is orchestration overhead. Worth every bit of it when you're running agents in parallel; complete overkill if you only ever run one.</p>
+<p><strong>Disk and dependencies are real.</strong> Each worktree is a full checkout, and things like node_modules or a Python venv don't magically share. For most repos it's a non-issue. For a monster monorepo, budget for it.</p>
 
 <h2>The payoff</h2>
-<p>Three agents, three features, one repo, all at once — each sealed in its own sandbox, none able to touch the others. When they finish, you're merging three clean branches, not performing surgery on a working directory that two agents fought over.</p>
+<p>Three agents, three features, one repo, all at once — each sealed in its own sandbox, none able to lay a finger on the others. When they finish, I'm merging three clean branches, not doing forensics on a working directory two agents fought over in the dark.</p>
 
-<p>That's the whole point. Worktrees are the filesystem version of the file-ownership rule from last time: the wall that makes "stay in your lane" physically true instead of merely hoped-for. It's dull plumbing. Dull plumbing is usually what separates a demo from something you'd actually trust with real work.</p>
+<p>It's dull plumbing. But dull plumbing is usually the exact thing standing between a slick demo and something you'd trust with real work while you're asleep — which, after that afternoon, is the only kind of trust I care about.</p>
 
 <hr>
 
-<p><em>This is part of a series on running AI agents that actually ship — the setup, the rules, and the stuff I got wrong first. If that's your kind of thing, <a href="https://substack.com/@buckstrdr">follow along</a>.</em></p>
+<p><em>This is part of a series on building AI agents that actually ship — the setup, the rules, and the afternoons I lost learning them. If that's your kind of thing, <a href="https://substack.com/@buckstrdr">follow along</a>.</em></p>
 
 </body>
 </html>
