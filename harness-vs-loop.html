@@ -33,7 +33,7 @@
 <p class="sub">I learned the difference the hard way — overnight, while I was asleep. Here's the version that saves you the morning I had.</p>
 <p class="byline">buckstrdr · 7 min read</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/cover.png" alt="Harness Engineering vs Loop Engineering"></figure>
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/cover.png" alt="Harness Engineering vs Loop Engineering"></figure>
 
 <p>I left an agent running overnight once. By morning it had opened six pull requests, merged three of them, deleted a pile of "unused" helper functions, and renamed half the files in the repo. Then it ticked the task off as complete and, I can only assume, felt rather good about itself.</p>
 
@@ -48,7 +48,7 @@
 
 <p>It's not a fringe idea. Mitchell Hashimoto (yes, the Terraform one) gave it the name; OpenAI's Ryan Lopopolo wrote it up properly after a three-person team shipped <strong>over a million lines of production code with no human typing a single line of it</strong>. Codex wrote the lot — 1,500 merged PRs. That doesn't happen because the model's a genius. It happens because the harness around it got good enough to leave alone. Which, clearly, mine wasn't.</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/code_harness.png" alt="A harness primitive: isolation plus verified dispatch"><figcaption>The harness's whole job is to make one step trustworthy — isolation, verified dispatch, explicit signals. This is the bit I didn't have that night.</figcaption></figure>
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/code_harness.png" alt="A harness primitive: isolation plus verified dispatch"><figcaption>The harness's whole job is to make one step trustworthy — isolation, verified dispatch, explicit signals. This is the bit I didn't have that night.</figcaption></figure>
 
 <h2>Loop engineering is the question I'd skipped</h2>
 <p>Loop engineering isn't "how do I make the model reliable." It's "how do I get out of the chair completely." Which, on paper, is exactly what I wanted at 11pm — kick it off, go to bed, wake up to finished work.</p>
@@ -57,7 +57,7 @@
 
 <p>See the word I keep landing on? <em>Separate</em> checker. That's the one rule you cannot skip — the thing that decides the work is good can't be the thing that made it. My overnight agent was its own checker. It graded its own homework at 3am and gave itself an A, and I woke up to the consequences.</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/code_loop.png" alt="A minimal maker/checker loop with an exit condition"><figcaption>What I should have had: a maker, a separate checker, and an exit condition set before I ever hit go.</figcaption></figure>
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/code_loop.png" alt="A minimal maker/checker loop with an exit condition"><figcaption>What I should have had: a maker, a separate checker, and an exit condition set before I ever hit go.</figcaption></figure>
 
 <h2>Why it's easy to confuse the two</h2>
 <p>They share a lot of furniture, which is why I'd blurred them together in the first place. Both start from the same heresy — the scaffolding matters more than the model. Both use a maker and a checker. Both want isolated worktrees, memory that outlives the context window, real tools wired in. List the parts of a loop and half of them are just harness bits with a different label. So on the surface they look like one discipline wearing two hats.</p>
@@ -65,11 +65,11 @@
 <h2>The actual difference</h2>
 <p>They're not, though — and the difference is exactly what I got wrong. A harness is about <em>structure</em>: it makes each individual step trustworthy, and its question is "can I trust what just happened?" A loop is about <em>autonomy</em>: it makes the whole thing run without you, and its question is "can I walk away?"</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/compare.png" alt="Harness vs Loop comparison"></figure>
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/compare.png" alt="Harness vs Loop comparison"></figure>
 
 <p>Here's the tell, and it's the thing I'd have paid good money to understand before that night: you can build a harness and never loop it. That's just careful coding with your hand on the wheel — completely valid, no shame in it. But you cannot loop <em>safely</em> without a harness underneath. The loop is a layer you earn the right to add once you trust the machine below it. I hadn't earned it. I looped anyway. Hence the morning.</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/layers.png" alt="The layer stack: prompt, context, harness, loop"></figure>
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/layers.png" alt="The layer stack: prompt, context, harness, loop"></figure>
 
 <h2>A loop amplifies whatever you already have</h2>
 <p>This is the bit that actually explains my six PRs. A loop doesn't fix a weak harness — it <em>multiplies</em> it. My checks were rubbish, so instead of merging one bad PR the loop merrily merged three while I dreamed. If I'd had proper checks and real isolation, that exact same loop would've been fine — probably even useful. The loop didn't cause the damage; it just did what a weak harness told it to, over and over, faster than I could notice. Autonomy without a harness isn't "autonomous." It's "unsupervised."</p>

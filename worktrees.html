@@ -10,7 +10,7 @@
 <p class="sub">Two agents, one repo, one very bad afternoon. The unglamorous git trick that fixed it for good.</p>
 <p class="byline">buckstrdr · 5 min read</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/worktrees_cover.png" alt="One repo, three agents, zero collisions"></figure>
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/worktrees_cover.png" alt="One repo, three agents, zero collisions"></figure>
 
 <p>I once had two agents building two different features in the same repo at the same time. Very efficient, I thought, very clever of me.</p>
 
@@ -21,7 +21,7 @@
 <h2>What a worktree actually is</h2>
 <p>A worktree is just a second working directory hanging off the same repo. Same history, same underlying <em>.git</em>, but checked out to its own branch, in its own folder. One command and you've got a complete, separate copy of the code, pinned to its own branch, sharing the repo's guts.</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/worktrees_code.png" alt="The git worktree lifecycle"></figure>
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/worktrees_code.png" alt="The git worktree lifecycle"></figure>
 
 <p>It's cheap, because it isn't a re-clone — the object store is shared. You just get another window into the same project that can't see the other windows. Which, after my mashed-together afternoon, was exactly what I wanted.</p>
 

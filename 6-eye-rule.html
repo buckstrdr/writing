@@ -33,7 +33,7 @@
 <p class="sub">One agent grades its own homework. Two don't share a brain. Six try to prove each other wrong. Here's how many to use, and when.</p>
 <p class="byline">buckstrdr · 6 min read</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/6eye/cover.png" alt="The 6-Eye Rule — 2, 4 and 6 eyes"></figure>
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/6eye/cover.png" alt="The 6-Eye Rule — 2, 4 and 6 eyes"></figure>
 
 <p>A while back an AI agent handed me a result that was completely, confidently wrong. And the part that stuck with me wasn't that it was wrong — it's that it was <em>plausible</em>. Tidy. Well argued. If I'd been in a rush I'd have shipped it.</p>
 
@@ -57,14 +57,14 @@
 <h2>6 eyes: make them try to break it</h2>
 <p>So for the high-stakes stuff I don't use one reviewer. I use several independent ones — and I change the question. Instead of "is this right?" each one gets told: <strong>"try to prove this is wrong."</strong> Default to refuted. The result only survives if the majority of them <em>fail</em> to break it.</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/6eye/flow.png" alt="Confirm vs refute: skeptics try to break a result"></figure>
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/6eye/flow.png" alt="Confirm vs refute: skeptics try to break a result"></figure>
 
 <p>That flip — from confirm to refute — is the entire trick. Three, four, six agents all attacking from different angles, each one defaulting to "this is broken" until proven otherwise. Confident nonsense almost never survives contact with someone actively trying to kill it. Plausible-but-wrong falls apart the moment you stop asking it to reassure you and start asking it to defend itself.</p>
 
 <h2>Scale the eyes to the stakes</h2>
 <p>The obvious objection: six agents attacking everything would be slow and expensive. Correct — so you don't. You don't 6-eye a typo. You match the cost of checking to the cost of being wrong.</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/6eye/ladder.png" alt="Scale the eyes to the stakes: 2 signals, 4 eyes, 6 eyes"></figure>
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/6eye/ladder.png" alt="Scale the eyes to the stakes: 2 signals, 4 eyes, 6 eyes"></figure>
 
 <p>Trivial, mechanical stuff — does it compile, do the tests pass, is it lint-clean — gets automated checks and nothing more. Normal work gets four eyes. The expensive-to-be-wrong claims get six. Most people fail at one end or the other: they under-verify everything and ship nonsense, or they over-verify everything and never ship a thing. The rule is just: more stakes, more independent eyes.</p>
 
@@ -73,7 +73,7 @@
 
 <p>Two things make an eye count. It has to be <strong>independent</strong> — a different agent, ideally a different model, without the context that would let it share the builder's blind spot. And it has to be <strong>adversarial</strong> — told to break it, defaulting to refuted, rewarded for finding the crack, not for being agreeable.</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/6eye/code.png" alt="Adversarial verify: default to refuted"></figure>
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/6eye/code.png" alt="Adversarial verify: default to refuted"></figure>
 
 <p>Get those two right and the number is just a dial. You turn it up as the stakes rise.</p>
 
