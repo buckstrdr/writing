@@ -30,69 +30,63 @@
 <body>
 
 <h1>Harness Engineering vs Loop Engineering: What's Actually the Difference?</h1>
-<p class="sub">Everyone's using the two terms like they mean the same thing. They don't — but they're not rivals either. Here's how they actually fit together.</p>
+<p class="sub">I learned the difference the hard way — overnight, while I was asleep. Here's the version that saves you the morning I had.</p>
 <p class="byline">buckstrdr · 7 min read</p>
 
 <figure><img src="https://buckstrdr.github.io/writing/img/cover.png" alt="Harness Engineering vs Loop Engineering"></figure>
 
-<p>Open X right now and you'll trip over both terms inside about thirty seconds. "Harness engineering is the new moat." "Loop engineering is how you remove yourself as the bottleneck." Half the posts use them like synonyms; the other half act like you have to pick a side.</p>
+<p>I left an agent running overnight once. By morning it had opened six pull requests, merged three of them, deleted a pile of "unused" helper functions, and renamed half the files in the repo. Then it ticked the task off as complete and, I can only assume, felt rather good about itself.</p>
 
-<p>Both are wrong. They're not the same thing, and they're not competitors — one sits on top of the other. Once that clicks, most of the noise sorts itself out. So let me untangle it.</p>
+<p>Everything was green. Every test passed. And the codebase was measurably worse than when I'd gone to bed — two of those "unused" helpers were very much in use, a chunk of my pipeline had quietly broken, and I spent most of the next morning unpicking what my tireless little employee had done while I slept.</p>
 
-<h2>What harness engineering actually is</h2>
-<p>The harness is everything <em>around</em> the model. Not the model itself — the model's basically a commodity now, and a good one is a download away. The harness is the scaffolding that turns raw intelligence into something you'd actually trust: the tools it can reach, the memory it keeps between runs, the isolation that stops one agent trampling another's work, the checks that catch it when it's confidently wrong, the observability so you can see what it actually did.</p>
+<p>That wasn't the model being stupid. GPT didn't get dumber overnight. That was me <em>looping</em> before I had a <em>harness</em> — and it's the entire reason the difference between those two words is worth ten minutes of your time.</p>
 
-<p>The term got its legs from Mitchell Hashimoto (yes, the Terraform bloke), and then a proper writeup from OpenAI's Ryan Lopopolo in early 2026. And it wasn't theory — it came off the back of a three-person team that shipped <strong>over a million lines of production code without a human typing a single one of them</strong>. Codex wrote all of it. 1,500 merged PRs. That doesn't happen because the model got smarter overnight. It happens because the harness around it got good enough to trust.</p>
+<p>Because right now you'll see both terms thrown around like they're the same thing, or like you have to pick a side. Neither's true. One sits on top of the other, and if you get the order wrong, you get a morning like mine.</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/code_harness.png" alt="A harness primitive: isolation plus verified dispatch"><figcaption>The harness's job: make each individual step trustworthy — isolation, verified dispatch, explicit signals.</figcaption></figure>
+<h2>The harness is everything around the model</h2>
+<p>After that night, I started caring a lot more about the harness than about which model I was running. The model's a commodity — a good one is a download away. The harness is the stuff that makes it <em>trustworthy</em>: the tools it can reach, the memory it keeps between runs, the isolation that stops one agent trampling another's work, and — the bit I'd clearly skipped — the checks that catch it when it's confidently wrong.</p>
 
-<h2>What loop engineering actually is</h2>
-<p>Loop engineering is answering a different question. It's not "how do I make the model reliable" — it's "how do I get out of the chair entirely."</p>
+<p>It's not a fringe idea. Mitchell Hashimoto (yes, the Terraform one) gave it the name; OpenAI's Ryan Lopopolo wrote it up properly after a three-person team shipped <strong>over a million lines of production code with no human typing a single line of it</strong>. Codex wrote the lot — 1,500 merged PRs. That doesn't happen because the model's a genius. It happens because the harness around it got good enough to leave alone. Which, clearly, mine wasn't.</p>
 
-<p>Avi Chawla framed it well: in a hand-run session you're doing two jobs — deciding what the agent does next, and checking its output before the next step. Loop engineering shoves both of those into the system. A schedule decides what runs. A maker agent does the work. A separate checker grades it. A file on disk holds the state between runs. It loops until it's done, or hits a max number of tries, or burns through its budget — then it stops.</p>
+<figure><img src="https://buckstrdr.github.io/writing/img/code_harness.png" alt="A harness primitive: isolation plus verified dispatch"><figcaption>The harness's whole job is to make one step trustworthy — isolation, verified dispatch, explicit signals. This is the bit I didn't have that night.</figcaption></figure>
 
-<p>The non-negotiable bit — and honestly this is the whole game — is the <strong>maker/checker split</strong>. Whatever decides the work is good <em>cannot</em> be the thing that made it. A model asked to grade its own output will almost always wave it through; a loop with no outside check is just an agent nodding at its own homework, forever. So the checker has to be something else: a hard signal like a failing test or a type error, or a second model running different instructions whose only job is to find the fault.</p>
+<h2>Loop engineering is the question I'd skipped</h2>
+<p>Loop engineering isn't "how do I make the model reliable." It's "how do I get out of the chair completely." Which, on paper, is exactly what I wanted at 11pm — kick it off, go to bed, wake up to finished work.</p>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/code_loop.png" alt="A minimal maker/checker loop with an exit condition"><figcaption>The loop's job: run the harness over and over, unsupervised, until a checker you trust says stop.</figcaption></figure>
+<p>Avi Chawla frames it well: in a hand-run session you're doing two jobs — deciding what the agent does next, and checking its output before the next step. Loop engineering shoves both into the system. A schedule decides what runs, a maker agent does the work, a separate checker grades it, a file on disk holds the state, and it loops until it's done or hits a limit.</p>
 
-<h2>Why everyone conflates them</h2>
-<p>The confusion is fair enough, because they share a lot of furniture. Both start from the same heresy: the scaffolding matters more than the model. Both lean on a maker/checker separation. Both want isolated worktrees so agents don't clobber each other, memory that outlives the context window, real tools wired in properly. If you list the <em>components</em> of a loop, half of them are just harness primitives with a different label on the box.</p>
+<p>See the word I keep landing on? <em>Separate</em> checker. That's the one rule you cannot skip — the thing that decides the work is good can't be the thing that made it. My overnight agent was its own checker. It graded its own homework at 3am and gave itself an A, and I woke up to the consequences.</p>
 
-<p>So on the surface they look like one discipline with two names. They're not.</p>
+<figure><img src="https://buckstrdr.github.io/writing/img/code_loop.png" alt="A minimal maker/checker loop with an exit condition"><figcaption>What I should have had: a maker, a separate checker, and an exit condition set before I ever hit go.</figcaption></figure>
 
-<h2>Where they genuinely differ</h2>
-<p>The difference is what each one is actually <em>for</em>.</p>
+<h2>Why it's easy to confuse the two</h2>
+<p>They share a lot of furniture, which is why I'd blurred them together in the first place. Both start from the same heresy — the scaffolding matters more than the model. Both use a maker and a checker. Both want isolated worktrees, memory that outlives the context window, real tools wired in. List the parts of a loop and half of them are just harness bits with a different label. So on the surface they look like one discipline wearing two hats.</p>
 
-<p><strong>Harness engineering is about structure.</strong> It makes each individual step reliable. Its unit is the <em>action</em> — one tool call, one edit, one review — and its question is: "can I trust what just happened?"</p>
+<h2>The actual difference</h2>
+<p>They're not, though — and the difference is exactly what I got wrong. A harness is about <em>structure</em>: it makes each individual step trustworthy, and its question is "can I trust what just happened?" A loop is about <em>autonomy</em>: it makes the whole thing run without you, and its question is "can I walk away?"</p>
 
-<p><strong>Loop engineering is about autonomy.</strong> It makes the whole thing run without you. Its unit is the <em>session</em> — the entire run from trigger to done — and its question is: "can I walk away?"</p>
+<figure><img src="https://buckstrdr.github.io/writing/img/compare.png" alt="Harness vs Loop comparison"></figure>
 
-<figure><img src="https://buckstrdr.github.io/writing/img/compare.png" alt="Harness vs Loop comparison table"></figure>
-
-<p>Put crudely: the harness is the machine. Loop engineering is pressing 'go' and wandering off to make a cup of tea. And here's the tell that one sits on top of the other — you can build a harness and never loop it. That's just careful interactive coding, human in the chair, and it's completely valid. But you cannot build a <em>good loop</em> without a harness underneath it. The loop is a layer you bolt on <em>after</em> you trust the harness.</p>
+<p>Here's the tell, and it's the thing I'd have paid good money to understand before that night: you can build a harness and never loop it. That's just careful coding with your hand on the wheel — completely valid, no shame in it. But you cannot loop <em>safely</em> without a harness underneath. The loop is a layer you earn the right to add once you trust the machine below it. I hadn't earned it. I looped anyway. Hence the morning.</p>
 
 <figure><img src="https://buckstrdr.github.io/writing/img/layers.png" alt="The layer stack: prompt, context, harness, loop"></figure>
 
-<h2>Why a good loop needs a good harness</h2>
-<p>This is the part people skip, and then get bitten by. A loop doesn't fix a flaky harness — it <em>amplifies</em> it. Whatever your harness does, good or bad, the loop now does a hundred times while you're not watching.</p>
+<h2>A loop amplifies whatever you already have</h2>
+<p>This is the bit that actually explains my six PRs. A loop doesn't fix a weak harness — it <em>multiplies</em> it. My checks were rubbish, so instead of merging one bad PR the loop merrily merged three while I dreamed. If I'd had proper checks and real isolation, that exact same loop would've been fine — probably even useful. The loop didn't cause the damage; it just did what a weak harness told it to, over and over, faster than I could notice. Autonomy without a harness isn't "autonomous." It's "unsupervised."</p>
 
-<p>If your checker is weak, the loop cheerfully merges rubbish faster than anyone can read it, and three weeks later nobody understands their own codebase. If your agents aren't isolated, the loop turns the occasional collision into a constant one. The loop is a force multiplier, and it multiplies whatever's already there — which is exactly why the boring harness properties (verification you can actually trust, isolation, state that survives a restart) are what <em>let</em> you leave the loop alone in the first place. Take those away and "autonomous" just means "unsupervised."</p>
+<h2>So, the order of operations I use now</h2>
+<p>Build the harness first. Get to where a single step is trustworthy — real checks, isolation, memory. <em>Then</em> ask one question: is "done" something a machine can actually verify? If it is — tests pass, lint clean, the boring stuff — loop it and go make tea. If "done" needs my judgment, my hand stays on it.</p>
 
-<h2>So when do you reach for which?</h2>
-<p>It's not a choice — it's an order of operations.</p>
+<p>I now loop the boring, verifiable things happily. And I would never again, as long as I live, leave something that can rename files at 3am running unwatched.</p>
 
-<p>Build the harness first. Always. Get to where each step is trustworthy: real checks, isolation, memory, tools. <em>Then</em> ask a second question — is "done" something a machine can actually verify? If it is (tests pass, lint clean, the boring stuff), close the loop and walk away. If "done" needs human judgment, keep your hand on it and run the harness interactively.</p>
+<h2>It's a stack, not a fight</h2>
+<p>Prompt engineering was the words. Context engineering was what the model can see. Harness engineering is the environment it works in. Loop engineering is taking your hands off. Each one sits on the last — and if you skip a rung, you find out the hard way, usually before breakfast.</p>
 
-<p>Loop the things you can verify. Babysit the things you can't. Most people try to loop everything, and then wonder why they spend their evenings firefighting.</p>
-
-<h2>The tidy way to hold all this</h2>
-<p>It's a stack, not a fight. Prompt engineering was about the words. Context engineering was about what the model can see. Harness engineering is about the environment it works in. Loop engineering is about taking your hands off. Each one sits on the last.</p>
-
-<p>The people winning right now aren't the ones who picked loop over harness. They're the ones who built a harness good enough that looping it wasn't terrifying. The model was never the moat — it's everything you build around it, and then, once you trust that, everything you build around <em>that</em>.</p>
+<p>The people quietly shipping with this stuff didn't pick loop over harness. They built a harness good enough that looping it wasn't a horror story. The model was never the moat. It's everything you build around it — and then, once you trust that, everything you build around <em>that</em>.</p>
 
 <hr>
 
-<p><em>This is part of a series on building AI agents that actually ship — the harness, the rules, and the stuff I got wrong first. If that's your kind of thing, <a href="https://substack.com/@buckstrdr">follow along</a>.</em></p>
+<p><em>This is part of a series on building AI agents that actually ship — the setup, the rules, and the 3am disasters I learned them from. If that's your kind of thing, <a href="https://substack.com/@buckstrdr">follow along</a>.</em></p>
 
 </body>
 </html>
