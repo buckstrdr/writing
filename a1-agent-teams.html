@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I Run a Team of AI Agents From My Phone. Here's How It Actually Works.</title>
+<style>
+  body{background:#fff;color:rgba(41,41,41,1);font-family:Georgia,'Times New Roman',serif;
+       max-width:680px;margin:0 auto;padding:48px 24px 80px;line-height:1.58;font-size:21px;-webkit-font-smoothing:antialiased;}
+  h1{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:40px;line-height:1.15;
+     font-weight:700;letter-spacing:-.02em;margin:0 0 12px;color:#242424;}
+  .sub{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:22px;line-height:1.3;
+       color:#6B6B6B;font-weight:400;margin:0 0 28px;}
+  h2{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:28px;line-height:1.2;
+     font-weight:700;letter-spacing:-.02em;margin:44px 0 8px;color:#242424;}
+  p{margin:0 0 28px;}
+  blockquote{border-left:3px solid #242424;margin:28px 0;padding:4px 0 4px 24px;font-style:italic;color:#242424;}
+  strong{font-weight:700;}
+  hr{border:none;text-align:center;margin:40px 0;}
+  hr:after{content:'· · ·';letter-spacing:.6em;color:#6B6B6B;font-size:22px;}
+  a{color:#242424;text-decoration:underline;}
+  .byline{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;color:#6B6B6B;
+          border-bottom:1px solid #eee;padding-bottom:24px;margin-bottom:32px;}
+  em{font-style:italic;}
+</style>
+</head>
+<body>
+
+<h1>I Run a Team of AI Agents From My Phone. Here's How It Actually Works.</h1>
+<p class="sub">No magic prompt. Just a tmux window, a Discord channel, and a few rules I learned the hard way to stop the whole thing shipping confident rubbish.</p>
+<p class="byline">Ian Salter · 6 min read</p>
+
+<p>Last week I shipped a feature while standing in a Tesco queue.</p>
+
+<p>I didn't write any of it. I sent one message to a Discord channel — <em>"spin up a builder and a reviewer, do the auth middleware"</em> — and put my phone back in my pocket. By the time I'd paid, three files were written, the tests were green, and a second agent had already moaned that the first one forgot a rate-limit header.</p>
+
+<p>I ran the team. I didn't do the work.</p>
+
+<p>Now, most of what gets written about AI coding is the same picture: one person, one chat window, one agent that either nails it or invents a library that doesn't exist. And that's fine right up until it isn't — usually the moment it matters. The thing that actually changed how I work wasn't a cleverer prompt. It was giving up on the single genius agent and running a small team of ordinary ones instead.</p>
+
+<h2>Why one agent isn't enough</h2>
+<p>A single agent has one problem you can't design around: it marks its own homework. It writes the code, tells you it's great, and sounds exactly as confident when it's wrong as when it's right. It's the developer, the reviewer and QA all at once — which really means it's none of them.</p>
+
+<p>We worked this out for humans decades ago. You don't let the person who wrote the code be the only one who checks it. So I stopped trying to make one agent smarter and started making a few of them argue.</p>
+
+<h2>The setup</h2>
+<p>It all sits in a <strong>tmux</strong> window — basically a grid of terminals I can see at a glance.</p>
+
+<p>One pane is the boss. It doesn't write code and it doesn't review code. All it does is take my instruction, chop it into jobs, hand them out, and tell me what's happening. The other panes are the workers — each one a fresh agent with a job title (builder, reviewer, researcher) and a model behind it. I deliberately mix the models: a Claude builder, a different model reviewing, so they don't share the same blind spots and nod along with each other.</p>
+
+<p>And they stay in their lanes. The builder builds. The reviewer picks holes. The boss coordinates. Nobody wanders off to "just quickly improve" something I never asked them to touch — which, if you've used these things, you'll know is half the battle.</p>
+
+<h2>Running it from my phone</h2>
+<p>The boss is plugged into a Discord channel. That's the whole remote control.</p>
+
+<p>I message it, it messages back — "builder's on the middleware," "reviewer's flagged a missing test," "done, PR's up." I'm not sat watching a terminal. I'm on the sofa, or in that Tesco queue, and the work reports up to me like a team would.</p>
+
+<p>Sounds like a gimmick. It isn't. The bottleneck in this stuff was never how fast the model types — it's <em>my</em> attention. The second the work started reporting to me in a channel I already check out of habit, I stopped being the thing everything waited on.</p>
+
+<h2>The bit nobody mentions: making sure it actually started</h2>
+<p>This one took me way too long to sort out.</p>
+
+<p>When you tell an agent to do something, you need to <em>know</em> it heard you. Early on I'd fire off a job, assume it landed, and come back twenty minutes later to find the worker never picked it up. The message just… went nowhere.</p>
+
+<p>So now it's not fire-and-forget. When the boss hands out a job, it checks the worker actually started — and gives it a nudge if it didn't. When a worker finishes, it leaves a little "done" marker the boss is watching for. No guessing, no "yeah that's probably finished." A proper handshake at both ends.</p>
+
+<p>Dull as it sounds, that one thing is the difference between a nice demo and something you'd trust with real work.</p>
+
+<h2>The rules that keep it honest</h2>
+<p>The wiring is only half of it. The other half is a handful of rules that all start from the same assumption: the agents <em>will</em> get things wrong, so build for it.</p>
+
+<p><strong>Whoever writes it doesn't review it.</strong> Different agent, different model. The reviewer's whole job is to find what the builder missed, and because it didn't write the code, it's got no pride to defend. It'll happily throw the builder under the bus. Good.</p>
+
+<p><strong>Everyone owns their own files.</strong> When a few agents work at once, each one gets its own patch and doesn't touch anyone else's. Sounds like admin. It's actually what stops two of them quietly overwriting each other and handing you something that compiles but is subtly broken — the worst kind of broken. <em>(The filesystem version of this — giving every agent its own git worktree so they physically can't tread on each other — is a whole article on its own. That one's coming.)</em></p>
+
+<p><strong>Make them try to prove it's wrong.</strong> For anything that matters I don't ask "is this right?" — I get a few agents to attack it and see if it survives. You'd be amazed how many confident, tidy-looking answers fall apart the moment three agents go at them looking for the crack.</p>
+
+<p><strong>Always say when you're done.</strong> Even — especially — when it went wrong. Silence is the one thing this setup can't cope with, because a worker that's quietly stuck looks identical to one that's making progress, right up until the deadline you've now missed.</p>
+
+<h2>What it's actually like</h2>
+<p>Honestly? It feels less like coding and more like running a small, fast, slightly feral team. I spend my time deciding what should happen and reading back what did — not typing it out myself. Some days it's genuinely brilliant. Some days a worker disappears down a rabbit hole and I have to step in like any manager whose bloke's gone quiet on Slack.</p>
+
+<p>And it's not free. Running a few agents at once burns through tokens, and an unsupervised team of them will find whole new ways to be wrong in parallel. Those rules aren't decoration — they're the only reason it isn't just an expensive machine for producing confident nonsense.</p>
+
+<p>But the shift is real, and I don't think it's going back in the box. The leverage was never a smarter agent. It's a better-run team of average ones.</p>
+
+<h2>If you fancy trying it</h2>
+<p>You don't need my exact rig. Start with two agents and one rule: <strong>whoever writes it isn't the one who checks it.</strong> And give the checker a proper job — "tell me what's wrong with this," not "does this look ok?" That single split will catch more than any amount of prompt-fiddling.</p>
+
+<p>Then, once you trust it, bolt on the boring bits that make it dependable — checked handoffs, clear ownership, a channel that tells you what's going on. None of it's glamorous. It's just the gap between a demo and something you'd actually rely on.</p>
+
+<hr>
+
+<p><em>I'm writing up the whole build as I go — the agent setup, the trading systems it grew out of, and the stuff I got wrong first. If that's your kind of thing, <a href="#">follow along</a>.</em></p>
+
+</body>
+</html>
