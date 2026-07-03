@@ -2,89 +2,68 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The 6-Eye Rule: How I Stop AI Agents Shipping Confident Nonsense</title>
-<style>
-  body{background:#fff;color:rgba(41,41,41,1);font-family:Georgia,'Times New Roman',serif;
-       max-width:680px;margin:0 auto;padding:48px 24px 80px;line-height:1.58;font-size:21px;-webkit-font-smoothing:antialiased;}
-  h1{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:40px;line-height:1.15;
-     font-weight:700;letter-spacing:-.02em;margin:0 0 12px;color:#242424;}
-  .sub{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:22px;line-height:1.3;
-       color:#6B6B6B;font-weight:400;margin:0 0 28px;}
-  h2{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:28px;line-height:1.2;
-     font-weight:700;letter-spacing:-.02em;margin:44px 0 8px;color:#242424;}
-  p{margin:0 0 28px;}
-  figure{margin:34px 0;text-align:center;}
-  figure img{width:100%;border-radius:8px;}
-  figcaption{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;color:#6B6B6B;margin-top:8px;}
-  blockquote{border-left:3px solid #242424;margin:28px 0;padding:4px 0 4px 24px;font-style:italic;color:#242424;}
-  strong{font-weight:700;}
-  hr{border:none;text-align:center;margin:40px 0;}
-  hr:after{content:'· · ·';letter-spacing:.6em;color:#6B6B6B;font-size:22px;}
-  a{color:#242424;text-decoration:underline;}
-  .byline{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;color:#6B6B6B;
-          border-bottom:1px solid #eee;padding-bottom:24px;margin-bottom:32px;}
-  em{font-style:italic;}
-</style>
 </head>
 <body>
 
 <h1>The 6-Eye Rule: How I Stop AI Agents Shipping Confident Nonsense</h1>
-<p class="sub">One agent grades its own homework. Two don't share a brain. Six try to prove each other wrong. Here's how many to use, and when.</p>
+<p class="sub">Four of my agents confirmed it. One tried to break it. Only the one that attacked it told me anything true.</p>
 <p class="byline">buckstrdr · 6 min read</p>
 
 <figure><img src="https://calm-rugelach-40293d.netlify.app/img/6eye/cover.png" alt="The 6-Eye Rule — 2, 4 and 6 eyes"></figure>
 
-<p>A while back an AI agent handed me a result that was completely, confidently wrong. And the part that stuck with me wasn't that it was wrong — it's that it was <em>plausible</em>. Tidy. Well argued. If I'd been in a rush I'd have shipped it.</p>
+<p>A while back a result landed in front of me that looked perfect. One of my agents had found what seemed like a real, exploitable pattern — tidy, well argued, the numbers lined up. Genuinely exciting for about an hour.</p>
 
-<p>The "reviewer" I'd pointed at it agreed, too — because I'd asked it the wrong question. I'd asked "does this look right?" Of course it looked right. It was built to look right. That's the whole problem with these things: the confidence is free, and it's identical whether the answer is brilliant or garbage.</p>
+<p>I had a second agent review it. "Looks good to me." So did the third. And the fourth. I was one click from building the next thing on top of it.</p>
 
-<p>The fix isn't a smarter model. It's more <em>eyes</em> — the right kind, pointed the right way, and knowing how many to use for what.</p>
+<p>Then, almost as an afterthought, I asked a fifth agent a slightly different question. Not "is this right?" but "<em>try to prove this is wrong.</em>" It took about ten minutes to show the whole thing was indistinguishable from random noise.</p>
 
-<h2>2 eyes: the trap</h2>
-<p>Two eyes is one agent that both writes the thing and checks it. It marks its own homework. And a model marking its own homework passes it basically every time — it's not lying, it just has no distance from what it made. This sounds too obvious to be worth saying, except it's the <em>default</em>. It's exactly where confident nonsense comes from: nobody with fresh eyes ever looked.</p>
+<p>Four agents had confirmed it. One had attacked it. Only the attack told me anything true. That's the entire case for what I've started calling the 6-eye rule — and it rests on a distinction almost nobody makes: the difference between an agent that <em>confirms</em> and an agent that <em>refutes</em>.</p>
 
-<h2>4 eyes: the baseline</h2>
-<p>Four eyes is the fix everyone reaches for, and it's a good one: the agent that writes it is never the agent that checks it. Different agent — and ideally a different <em>model</em>, because two instances of the same model tend to share the same blind spots and nod along with each other.</p>
+<h2>Two eyes: marking your own homework</h2>
+<p>Start at the bottom. Two eyes is one agent that both does the work and checks it. And a model checking its own work passes it nearly every time — not out of dishonesty, it just has no distance from the thing it made. It's the developer, the reviewer and QA all at once, which really means it's none of them. That's where confident nonsense is born: nobody with fresh eyes ever looked.</p>
 
-<p>The reviewer's only job is to find what the builder missed, and because it didn't write the code, it's got no ego in it. It'll happily throw the builder under the bus. For everyday work — most edits, most features — four eyes is genuinely enough. Don't over-engineer past it for a button colour.</p>
+<h2>Four eyes: the baseline that catches most of it</h2>
+<p>Four eyes is the obvious upgrade, and a good one — the agent that writes it is never the agent that checks it. Different agent, and ideally a different <em>model</em>, because two instances of the same model tend to share the same blind spots and cheerfully agree with each other.</p>
+
+<p>The reviewer's only job is to find what the builder missed, and since it didn't write the thing, it's got no ego in it. For everyday work — most edits, most features — four eyes is genuinely enough, and I don't reach past it. You don't need a tribunal to approve a button colour.</p>
 
 <h2>When four isn't enough</h2>
-<p>For a normal edit, one reviewer is fine. But for a claim that's <em>expensive to be wrong about</em> — a result you're about to build the next thing on top of, a "this works" you're about to ship, a finding you're about to act on — one reviewer is a single point of failure.</p>
+<p>My exciting result had four eyes on it. Four eyes is where it fell down. Because for a claim that's <em>expensive to be wrong about</em> — something you're about to build on, act on, or ship — a single reviewer is a single point of failure. It can share the blind spot. It can just be wrong. It can agree because agreeing is the easy path.</p>
 
-<p>It can share the blind spot. It can just be wrong. It can agree too easily because agreeing is the path of least resistance. And here's the nasty bit: the more plausible the nonsense, the <em>more</em> likely a single reviewer waves it through. The dangerous errors are precisely the ones that look right.</p>
+<p>And here's the cruel bit: the more plausible the nonsense, the more likely a lone reviewer waves it through. The dangerous errors are exactly the ones that look right. Mine looked <em>great</em>.</p>
 
-<h2>6 eyes: make them try to break it</h2>
-<p>So for the high-stakes stuff I don't use one reviewer. I use several independent ones — and I change the question. Instead of "is this right?" each one gets told: <strong>"try to prove this is wrong."</strong> Default to refuted. The result only survives if the majority of them <em>fail</em> to break it.</p>
+<h2>Six eyes: tell them to break it</h2>
+<p>So for the high-stakes stuff I stopped using one reviewer and started using several — independent ones — and I changed the question I asked them. Not "is this right?" but "<strong>try to prove this is wrong.</strong>" Default to refuted. The result only survives if the majority of them <em>fail</em> to break it.</p>
 
 <figure><img src="https://calm-rugelach-40293d.netlify.app/img/6eye/flow.png" alt="Confirm vs refute: skeptics try to break a result"></figure>
 
-<p>That flip — from confirm to refute — is the entire trick. Three, four, six agents all attacking from different angles, each one defaulting to "this is broken" until proven otherwise. Confident nonsense almost never survives contact with someone actively trying to kill it. Plausible-but-wrong falls apart the moment you stop asking it to reassure you and start asking it to defend itself.</p>
+<p>That flip — from confirm to refute — is the whole trick. Several agents attacking from different angles, each starting from "this is broken" until proven otherwise. Confident nonsense almost never survives someone actively trying to kill it. Ask it to reassure you and it will, warmly. Ask it to defend itself and it falls apart. Mine fell apart in ten minutes.</p>
 
 <h2>Scale the eyes to the stakes</h2>
-<p>The obvious objection: six agents attacking everything would be slow and expensive. Correct — so you don't. You don't 6-eye a typo. You match the cost of checking to the cost of being wrong.</p>
+<p>Obvious objection: six agents attacking everything would be slow and expensive. Right — so you don't. I don't 6-eye a typo. You match the cost of checking to the cost of being wrong.</p>
 
-<figure><img src="https://calm-rugelach-40293d.netlify.app/img/6eye/ladder.png" alt="Scale the eyes to the stakes: 2 signals, 4 eyes, 6 eyes"></figure>
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/6eye/ladder.png" alt="Scale the eyes to the stakes"></figure>
 
-<p>Trivial, mechanical stuff — does it compile, do the tests pass, is it lint-clean — gets automated checks and nothing more. Normal work gets four eyes. The expensive-to-be-wrong claims get six. Most people fail at one end or the other: they under-verify everything and ship nonsense, or they over-verify everything and never ship a thing. The rule is just: more stakes, more independent eyes.</p>
+<p>Trivial, mechanical stuff gets automated checks and nothing more — does it compile, do the tests pass. Normal work gets four eyes. The expensive-to-be-wrong claims get six. Most people miss at one end or the other: under-check everything and ship nonsense, or over-check everything and never ship. The rule is just: the more it'd hurt to be wrong, the more independent eyes it earns.</p>
 
 <h2>It's independence and attitude, not headcount</h2>
-<p>Here's the bit people get wrong when they hear "six eyes" — they add more reviewers and change nothing else. Six agents that all <em>confirm</em> are worthless. They'll all confirm, confidently, together. Two that genuinely attack are worth more than six that nod.</p>
+<p>Here's what people get wrong the moment they hear "six eyes" — they add more reviewers and change nothing else. Six agents that all confirm are worthless. They'll all confirm, together, confidently. Two that genuinely attack beat six that nod.</p>
 
-<p>Two things make an eye count. It has to be <strong>independent</strong> — a different agent, ideally a different model, without the context that would let it share the builder's blind spot. And it has to be <strong>adversarial</strong> — told to break it, defaulting to refuted, rewarded for finding the crack, not for being agreeable.</p>
+<p>Two things make an eye count. It has to be <strong>independent</strong> — a different agent, ideally a different model, without the shared context that would let it inherit the builder's blind spot. And it has to be <strong>adversarial</strong> — told to break it, defaulting to refuted, rewarded for finding the crack rather than for being agreeable.</p>
 
 <figure><img src="https://calm-rugelach-40293d.netlify.app/img/6eye/code.png" alt="Adversarial verify: default to refuted"></figure>
 
-<p>Get those two right and the number is just a dial. You turn it up as the stakes rise.</p>
+<p>Get those two right and the number is just a dial you turn up as the stakes rise.</p>
 
-<h2>The result I mentioned at the top?</h2>
-<p>It survived four separate "looks good to me" reviews. It died in about ten minutes the first time someone actually tried to <em>break</em> it instead of confirm it — the thing that looked like a real signal turned out to be indistinguishable from noise the moment it was properly attacked. Four confirmations, zero value. One genuine attack, problem found. That's the whole case for the 6-eye rule in one story.</p>
+<h2>Back to that result</h2>
+<p>The one that looked perfect? Four "looks good to me"s and zero value. One genuine attack and the problem was obvious inside ten minutes. If I'd trusted the confirmations, I'd have built a week of work on sand.</p>
 
-<p>A team of AI agents is only ever as trustworthy as its willingness to attack its own conclusions. The model will always sound sure of itself — that's not something you can fix. What you <em>can</em> build is the thing that doesn't care how sure it sounds, and just keeps trying to prove it wrong until it can't. That's the whole game.</p>
+<p>A team of AI agents is only ever as trustworthy as its willingness to attack its own conclusions. The model will always sound sure of itself — you can't fix that, and you shouldn't try. What you <em>can</em> build is the thing that doesn't care how sure it sounds, and just keeps trying to prove it wrong until it can't. That's the whole game.</p>
 
 <hr>
 
-<p><em>This is part of a series on building AI agents that actually ship — the setup, the rules, and the stuff I got wrong first. If that's your kind of thing, <a href="https://substack.com/@buckstrdr">follow along</a>.</em></p>
+<p><em>This is part of a series on building AI agents that actually ship — the rules, the setup, and the confident nonsense I nearly shipped along the way. If that's your kind of thing, <a href="https://substack.com/@buckstrdr">follow along</a>.</em></p>
 
 </body>
 </html>
