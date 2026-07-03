@@ -23,15 +23,21 @@
 <h2>Two eyes: marking your own homework</h2>
 <p>Start at the bottom. Two eyes is one agent that both does the work and checks it. And a model checking its own work passes it nearly every time — not out of dishonesty, it just has no distance from the thing it made. It's the developer, the reviewer and QA all at once, which really means it's none of them. That's where confident nonsense is born: nobody with fresh eyes ever looked.</p>
 
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/6eye/selfgrade.png" alt="Two eyes: one agent grades its own homework"></figure>
+
 <h2>Four eyes: the baseline that catches most of it</h2>
 <p>Four eyes is the obvious upgrade, and a good one — the agent that writes it is never the agent that checks it. Different agent, and ideally a different <em>model</em>, because two instances of the same model tend to share the same blind spots and cheerfully agree with each other.</p>
 
 <p>The reviewer's only job is to find what the builder missed, and since it didn't write the thing, it's got no ego in it. For everyday work — most edits, most features — four eyes is genuinely enough, and I don't reach past it. You don't need a tribunal to approve a button colour.</p>
 
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/6eye/foureyes.png" alt="Four eyes: builder and reviewer are different agents and models"></figure>
+
 <h2>When four isn't enough</h2>
 <p>My exciting result had four eyes on it. Four eyes is where it fell down. Because for a claim that's <em>expensive to be wrong about</em> — something you're about to build on, act on, or ship — a single reviewer is a single point of failure. It can share the blind spot. It can just be wrong. It can agree because agreeing is the easy path.</p>
 
 <p>And here's the cruel bit: the more plausible the nonsense, the more likely a lone reviewer waves it through. The dangerous errors are exactly the ones that look right. Mine looked <em>great</em>.</p>
+
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/6eye/oneisnotenough.png" alt="One reviewer is a single point of failure"></figure>
 
 <h2>Six eyes: tell them to break it</h2>
 <p>So for the high-stakes stuff I stopped using one reviewer and started using several — independent ones — and I changed the question I asked them. Not "is this right?" but "<strong>try to prove this is wrong.</strong>" Default to refuted. The result only survives if the majority of them <em>fail</em> to break it.</p>
