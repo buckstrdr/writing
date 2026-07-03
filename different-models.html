@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Different Models, Different Blind Spots: Why Your AI Reviewer Shouldn't Be the Same Model That Wrote the Code</title>
+</head>
+<body>
+
+<h1>Different Models, Different Blind Spots</h1>
+<p class="sub">The model that writes your code is the worst possible judge of it. Not because it's bad — because it's blind in exactly the same places.</p>
+<p class="byline">buckstrdr · 6 min read</p>
+
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/models/cover.png" alt="Two different models with different blind spots"></figure>
+
+<p>Earlier today I had one model build a set of diagrams for me — write the code, render them, then run its own checklist over the output and tell me what passed. It came back glowing. Every single one, ticked off, clean.</p>
+
+<p>They weren't clean. I handed the same images to a different model and asked a blunter question: what's wrong with these? It came back in seconds. An arrow poking out through its own tip. A caption spilling past the edge of its box. One diagram cheerfully claiming six reviewers when the entire piece was about three.</p>
+
+<p>The first model wasn't lazy. It wasn't broken. It had genuinely checked its work. The problem is that it checked with the same eyes that made the thing — so every assumption it baked in while building, it carried straight into the review. It couldn't see the mistakes because, to it, they weren't mistakes. They were just how it thinks.</p>
+
+<p>That's the whole argument for something almost nobody bothers with: your reviewer should be a <em>different model</em> from your builder. Not a second copy. A different one.</p>
+
+<h2>Two copies of the same model are one opinion</h2>
+
+<p>The obvious move, once you accept that a model shouldn't grade its own homework, is to spin up a second instance and have it review the first. Feels like two sets of eyes. It isn't.</p>
+
+<p>Two instances of the same model share a brain. Same training, same instincts, same soft spots. Ask one to write a function and the other to check it and they'll agree — warmly, immediately — because they'd have written it the same way. The bug the first one couldn't see is invisible to the second for the exact same reason. You've doubled the headcount and learned nothing.</p>
+
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/models/samemodel.png" alt="Two copies of the same model share the same blind spot"></figure>
+
+<p>I've watched this play out in my own code more times than I'd like. One model writes something that looks right, reads right, and passes its own review with a little flourish. A second copy nods along. Then it ships, and the thing it was all confidently wrong about surfaces at the worst possible moment.</p>
+
+<h2>Different models are wrong in different directions</h2>
+
+<p>Here's the bit that actually matters. Two good models aren't good in the same way, and they're definitely not <em>wrong</em> in the same way.</p>
+
+<p>One will over-engineer — three layers of abstraction for a job that needed a function. Another writes something tight and readable but quietly skips the edge cases. One invents an API that sounds plausible and doesn't exist. One is so literal it does exactly what you asked and nothing you meant. These aren't random quirks; they're baked in by how each was trained.</p>
+
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/models/blindspots.png" alt="Different models have different blind spots that overlap to cover more"></figure>
+
+<p>So when you put a different model on the review, you're not just getting a second opinion — you're getting a second <em>set of weaknesses</em>, and crucially they don't line up with the first. The builder's blind spot sits right in the middle of the reviewer's field of view. The stuff model A is congenitally unable to notice is often the first thing model B trips over.</p>
+
+<h2>A concrete one</h2>
+
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/models/concrete.png" alt="Model A's code passes its own tests; model B asks the awkward questions"></figure>
+
+<p>Classic version, and I've hit it more than once: model A writes a chunk of data-processing code. Looks lovely. Handles the happy path, reads cleanly, passes its own tests — which it also wrote, so of course it does. Ship it.</p>
+
+<p>Hand the same code to model B first and the conversation is different. "What happens when this list is empty?" "You're catching that exception and swallowing it — was that on purpose?" "This assumes the timestamps are sorted; are they?" None of it clever. All of it stuff model A simply didn't think to doubt, because doubting it wasn't in its nature. The second model wasn't smarter. It was just differently suspicious.</p>
+
+<h2>It's not about which model is "best"</h2>
+
+<p>This trips people up. They pick the single strongest model and run everything through it — builder and reviewer both. Understandable, and wrong.</p>
+
+<p>A weaker model can catch a bug the strongest one shipped, purely because it's weak in different places. I've had a smaller, cheaper model flag something a top-tier one wrote and missed — not because it out-thought it, but because it didn't share the blind spot. When you're reviewing, difference beats raw horsepower. You want the eyes that <em>aren't</em> yours, even if they're cheaper eyes.</p>
+
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/models/horsepower.png" alt="A cheaper model catches a bug the top-tier model shipped"></figure>
+
+<h2>How I actually wire it</h2>
+
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/models/wiring.png" alt="Builder model A hands to reviewer model B, with a third model for the tie-break"></figure>
+
+<p>In my setup the builder and the reviewer are never the same model. One writes, a different one reviews, and if I care about the outcome I'll add a third from a third family for the tie-break. It costs a bit more per task. It's saved me from shipping confident rubbish more times than I can count.</p>
+
+<p>The rule I follow is boring and it works: whoever writes it doesn't review it, and whoever reviews it isn't the same model that wrote it. Two different questions, two different brains. The disagreements between them are where the real bugs live — the moments where model B goes "hang on" are worth more than a hundred agreements.</p>
+
+<h2>Back to those diagrams</h2>
+
+<figure><img src="https://calm-rugelach-40293d.netlify.app/img/models/closer.png" alt="Same eyes can't see their own mistakes; different eyes can"></figure>
+
+<p>The model that built them wasn't wrong to think they were fine. From the inside, they were. It's only from the outside — a different model, a different set of instincts — that the arrow through the arrowhead and the count that didn't add up became obvious.</p>
+
+<p>That's the trick, and it's cheaper than it sounds. Stop asking a model to find its own mistakes. It can't; the mistakes and the mistake-checker are the same thing. Ask a <em>different</em> one. It's wrong about different stuff — which is exactly why it can see where the first one was blind.</p>
+
+<hr>
+
+<p><em>This is part of a series on building AI agents that actually ship — the rules, the setup, and the confident nonsense I nearly shipped along the way. If that's your kind of thing, <a href="https://substack.com/@buckstrdr">follow along</a>.</em></p>
+
+</body>
+</html>
